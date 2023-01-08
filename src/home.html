@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Aniket Singh</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+            font-weight: 100;
+            letter-spacing: 1px;
+        }
+        body {
+            background-color: #f3f3f3;
+            padding: 25px;
+            text-align: center;
+        }
+        form {
+            background: #797979;
+            margin: 0 auto 50px;
+            padding: 25px;
+            width: 500px;
+        }
+        input {
+            border: none;
+            display: block;
+            font-size: 16px;
+            margin: 25px auto;
+            outline: none;
+            padding: 10px;
+            width: 100%;
+        }
+        input[type="submit"] {
+            background: #eaeaea;
+        }
+        input[type="submit"]:hover {
+            background: white;
+            cursor: pointer;
+        }
+        textarea {
+            border: none;
+            display: block;
+            font-size: 16px;
+            margin: 0 auto 25px;
+            outline: none;
+            padding: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<form action="/compose-article/" method="post">
+    <label>Enter Your Password
+    <input type="password" placeholder="Password" name="password">
+    </label>
+    <input type="submit">
+</form>
+</body>
+</html>
