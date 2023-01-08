@@ -17,8 +17,15 @@ var db = database.CreateDB("sqlite3", os.Getenv("DB"))
 Handler Functions
 */
 
+// Enable Cors
+func enableCors(res *http.ResponseWriter) {
+	// Todo * -> our origin for more security
+	(*res).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 // Home the home page
 func Home(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
 	t, err := template.ParseFiles("src/home.html")
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
@@ -30,6 +37,7 @@ func Home(res http.ResponseWriter, req *http.Request) {
 }
 
 func composeArticle(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
 	err := req.ParseForm()
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
@@ -54,6 +62,7 @@ func composeArticle(res http.ResponseWriter, req *http.Request) {
 }
 
 func addArticle(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
 	err := req.ParseForm()
 
 	if err != nil {
@@ -81,6 +90,7 @@ func addArticle(res http.ResponseWriter, req *http.Request) {
 }
 
 func getArticles(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
 	var articles []database.Article = database.GetArticles(db)
 	res.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(articles)
