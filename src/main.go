@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/KunalSin9h/go/src/database"
 	"github.com/KunalSin9h/go/src/server"
@@ -98,8 +99,9 @@ func main() {
 	http.HandleFunc("/compose-article/", composeArticle)
 	http.HandleFunc("/add-article/", addArticle)
 	http.HandleFunc("/get-articles/", getArticles)
+	PORT, _ := strconv.Atoi(os.Getenv("PORT"))
 	serverConfig := server.Server{
-		Port:    5000,
+		Port:    int16(PORT),
 		Timeout: 3,
 	}
 	serverConfig.StartServer()
