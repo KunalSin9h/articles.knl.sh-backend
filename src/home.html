@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Aniket Singh</title>
+    <title>Aniket Singh - Add Articles</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,15 +11,21 @@
             letter-spacing: 1px;
         }
         body {
-            background-color: #f3f3f3;
+            background-color: #EEEED0;
             padding: 25px;
             text-align: center;
         }
         form {
-            background: #797979;
+            background: #181815;
             margin: 0 auto 50px;
             padding: 25px;
             width: 500px;
+            border-radius: 10px;
+        }
+        .lbl {
+            color: #E8E8E8;
+            font-weight: 700;
+            font-size: x-large;
         }
         input {
             border: none;
@@ -29,6 +35,7 @@
             outline: none;
             padding: 10px;
             width: 100%;
+            border-radius: 10px;
         }
         input[type="submit"] {
             background: #eaeaea;
@@ -50,7 +57,7 @@
 </head>
 <body>
 <form action="/compose-article/" method="post">
-    <label>Enter Your Password
+    <label><p class="lbl">Enter Your Password</p>
     <input type="password" placeholder="Password" name="password">
     </label>
     <input type="submit">
