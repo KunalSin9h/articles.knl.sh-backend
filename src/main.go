@@ -24,7 +24,7 @@ func enableCors(res *http.ResponseWriter) {
 }
 
 // Home the home page
-func Home(res http.ResponseWriter, req *http.Request) {
+func Home(res http.ResponseWriter, _ *http.Request) {
 	enableCors(&res)
 	t, err := template.ParseFiles("src/home.html")
 	if err != nil {
@@ -89,7 +89,7 @@ func addArticle(res http.ResponseWriter, req *http.Request) {
 
 }
 
-func getArticles(res http.ResponseWriter, req *http.Request) {
+func getArticles(res http.ResponseWriter, _ *http.Request) {
 	enableCors(&res)
 	var articles []database.Article = database.GetArticles(db)
 	res.Header().Set("Content-Type", "application/json")
