@@ -3,7 +3,8 @@ package database
 import (
 	"database/sql"
 	"log"
-
+    
+    "github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -27,7 +28,7 @@ func CreateTable(db *sql.DB, table string) {
 }
 
 func InsertArticle(db *sql.DB, title, slug, description, date, md string) {
-	id := slug
+	id := uuid.New() 
 	query := "insert into articles (id, title, slug, description, date, md) values (?, ?, ?, ?, ?, ?)"
 	_, err := db.Exec(query, id, title, slug, description, date, md)
 	if err != nil {
