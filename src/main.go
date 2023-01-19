@@ -2,13 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/KunalSin9h/go/src/database"
-	"github.com/KunalSin9h/go/src/server"
 )
 
 var db = database.CreateDB("sqlite3", os.Getenv("DB"))
@@ -109,10 +109,10 @@ func main() {
 	http.HandleFunc("/compose-article/", composeArticle)
 	http.HandleFunc("/add-article/", addArticle)
 	http.HandleFunc("/get-articles/", getArticles)
-	PORT, _ := strconv.Atoi(os.Getenv("PORT"))
-	serverConfig := server.Server{
-		Port:    int16(PORT),
-		Timeout: 3,
+	PORT := os.Getenv("PORT")
+	if PORT == "" {
+		PORT = "5005"
 	}
-	serverConfig.StartServer()
+	log.Printf("Server running at port: %s", PORT)
+	http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil)
 }
