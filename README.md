@@ -1,6 +1,6 @@
 # article.knl.sh-backend
 
-backend for https://article.knl.sh
+backend for https://articles.knl.sh
 
 # Docker running
 
