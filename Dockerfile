@@ -1,10 +1,11 @@
 FROM golang:1.19.5-alpine3.17 as BUILDER
+RUN apk add gcc musl-dev
 WORKDIR /app
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY src ./src
-RUN CGO_ENABLED=0 go build ./src/main.go
+RUN go build ./src/main.go
 
 FROM alpine:3.17
 WORKDIR /app
