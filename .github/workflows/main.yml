@@ -18,4 +18,4 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           echo "${{ secrets.GHCR }}" | docker login ghcr.io -u "kunalsin9h" --password-stdin
-          docker push ghcr.io/kunalsin9h/article-back:latest
+          docker push ghcr.io/kunalsin9h/articles-back:latest

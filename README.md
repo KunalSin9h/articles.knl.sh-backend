@@ -1,11 +1,11 @@
-# article.knl.sh-backend
+# articles.knl.sh-backend
 
 backend for https://articles.knl.sh
 
 # Docker running
 
 ```bash
-sudo docker run --name article-back -p 5000:5000 --rm -d \
+sudo docker run --name articles-back -p 5000:5000 --rm -d \
     -e PASSWORD=1234 \
     -e DB=./db/prod.db \
     -e PORT=5000 \

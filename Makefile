@@ -5,4 +5,4 @@ run:
 	go run ./src/main.go
 
 build:
-	docker build -t ghcr.io/kunalsin9h/article-back:latest .
+	docker build -t ghcr.io/kunalsin9h/articles-back:latest .
