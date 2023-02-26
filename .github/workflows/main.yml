@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3
+      - name: Build
+        run: |
+          make build
+      - name: Push
+        if: github.ref == 'refs/heads/master'
+        run: |
+          echo "${{ secrets.GHCR }}" | docker login ghcr.io -u "kunalsin9h" --password-stdin
+          docker push ghcr.io/kunalsin9h/article-back:latest

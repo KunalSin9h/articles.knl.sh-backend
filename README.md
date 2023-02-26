@@ -1,14 +1,14 @@
-# aniketsingh.co.in
-backend for aniketsingh.co.in
+# article.knl.sh-backend
+
+backend for https://article.knl.sh
 
 # Docker running
 
-
 ```bash
-sudo docker run --name asback -p 5005:5005 --rm -d \
+sudo docker run --name article-back -p 5000:5000 --rm -d \
     -e PASSWORD=1234 \
     -e DB=./db/prod.db \
-    -e PORT=5005 \
+    -e PORT=5000 \
     --mount type=bind,source="$(pwd)"/db/prod.db,target=/app/db/prod.db \
-    kunalsin9h/asback:latest
+    ghcr.io/kunalsin9h/article-back:latest
 ```
