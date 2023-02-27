@@ -101,7 +101,21 @@ func getArticles(res http.ResponseWriter, _ *http.Request) {
 	if err2 != nil {
 		http.Error(res, err.Error(), http.StatusNotFound)
 	}
+}
 
+func getSingleArticle(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
+	slug := req.URL.Query().Get("slug")
+	article := database.GetSingleArticle(slug, db)
+	res.Header().Set("Content-Type", "application/json")
+	jsonResponse, err := json.Marshal(article)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+	}
+	_, err2 := res.Write(jsonResponse)
+	if err2 != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+	}
 }
 
 func main() {
@@ -109,6 +123,7 @@ func main() {
 	http.HandleFunc("/compose-article/", composeArticle)
 	http.HandleFunc("/add-article/", addArticle)
 	http.HandleFunc("/get-articles/", getArticles)
+	http.HandleFunc("/get-article/", getSingleArticle)
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "5005"

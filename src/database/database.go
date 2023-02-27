@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-    "github.com/google/uuid"
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -43,4 +43,13 @@ func GetArticles(db *sql.DB) []Article {
 		articles = append(articles, art)
 	}
 	return articles
+}
+
+func GetSingleArticle(slug string, db *sql.DB) Article {
+	row := db.QueryRow("select * from articles where slug = ?", slug)
+
+	art := Article{}
+	row.Scan(&art.Id, &art.Title, &art.Slug, &art.Description, &art.Date, &art.Md)
+
+	return art
 }
