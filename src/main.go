@@ -118,12 +118,43 @@ func getSingleArticle(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func getAllArticlesMeta(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
+	var articlesMeta []database.ArticleMeta = database.GetArticlesMeta(db)
+	res.Header().Set("Content-Type", "application/json")
+	jsonResponse, err := json.Marshal(articlesMeta)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+	}
+	_, err2 := res.Write(jsonResponse)
+	if err2 != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+	}
+}
+
+func getSingleArticleMeta(res http.ResponseWriter, req *http.Request) {
+	enableCors(&res)
+	slug := req.URL.Query().Get("slug")
+	var articleMeta database.ArticleMeta = database.GetSingleArticleMeta(slug, db)
+	res.Header().Set("Content-Type", "application/json")
+	jsonResponse, err := json.Marshal(articleMeta)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+	}
+	_, err2 := res.Write(jsonResponse)
+	if err2 != nil {
+		http.Error(res, err.Error(), http.StatusNotFound)
+	}
+}
+
 func main() {
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/compose-article/", composeArticle)
 	http.HandleFunc("/add-article/", addArticle)
 	http.HandleFunc("/get-articles/", getArticles)
 	http.HandleFunc("/get-article/", getSingleArticle)
+	http.HandleFunc("/get-articles-meta/", getAllArticlesMeta)
+	http.HandleFunc("/get-article-meta/", getSingleArticleMeta)
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
 		PORT = "5005"
