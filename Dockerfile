@@ -4,12 +4,12 @@ WORKDIR /app
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
-COPY src ./src
-RUN go build ./src/main.go
+COPY cmd ./cmd
+RUN go build ./cmd/main.go
 
 FROM alpine:3.17
 WORKDIR /app
-COPY --from=BUILDER /app/src/home.html /app/src/home.html
-COPY --from=BUILDER /app/src/compose.html /app/src/compose.html
+COPY --from=BUILDER /app/cmd/home.html /app/cmd/home.html
+COPY --from=BUILDER /app/cmd/compose.html /app/cmd/compose.html
 COPY --from=BUILDER /app/main .
 CMD [ "./main" ]
