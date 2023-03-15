@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/KunalSin9h/go/src/database"
 )
@@ -43,7 +44,7 @@ func composeArticle(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 	}
 
-	password := req.FormValue("password")
+	password := strings.TrimSpace(req.FormValue("password"))
 	if password != os.Getenv("PASSWORD") {
 		http.Error(res, err.Error(), http.StatusForbidden)
 	}
@@ -69,9 +70,9 @@ func addArticle(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 	}
 
-	title := req.FormValue("title")
-	slug := req.FormValue("slug")
-	description := req.FormValue("description")
+	title := strings.TrimSpace(req.FormValue("title"))
+	slug := strings.TrimSpace(req.FormValue("slug"))
+	description := strings.TrimSpace(req.FormValue("description"))
 	date := req.FormValue("date")
 	md := req.FormValue("md")
 
