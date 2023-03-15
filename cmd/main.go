@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/KunalSin9h/go/src/database"
+	"github.com/KunalSin9h/go/cmd/database"
 )
 
 var db = database.CreateDB("sqlite3", os.Getenv("DB"))
@@ -27,7 +27,7 @@ func enableCors(res *http.ResponseWriter) {
 // Home the home page
 func Home(res http.ResponseWriter, _ *http.Request) {
 	enableCors(&res)
-	t, err := template.ParseFiles("src/home.html")
+	t, err := template.ParseFiles("cmd/home.html")
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
 	}
@@ -49,7 +49,7 @@ func composeArticle(res http.ResponseWriter, req *http.Request) {
 		http.Error(res, err.Error(), http.StatusForbidden)
 	}
 
-	t, errNew := template.ParseFiles("src/compose.html")
+	t, errNew := template.ParseFiles("cmd/compose.html")
 
 	if errNew != nil {
 		http.Error(res, err.Error(), http.StatusBadRequest)
