@@ -1,18 +1,86 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/KunalSin9h/go/cmd/database"
 )
 
-var db = database.CreateDB("sqlite3", os.Getenv("DB"))
+var (
+	DB       *sql.DB
+	DB_PATH  = os.Getenv("DB")
+	PORT     = os.Getenv("PORT")
+	PASSWORD = os.Getenv("PASSWORD")
+)
+
+func init() {
+
+	if PORT == "" {
+		log.Println("Use default port: 5000")
+		PORT = "5000"
+	}
+
+	if DB_PATH == "" {
+		log.Println("Use default database: ./database/dev.db")
+		DB_PATH = "./database/dev.db"
+	}
+
+	if PASSWORD == "" {
+		log.Println("Use default password: 1234")
+		PASSWORD = "1234"
+	}
+
+	if _, err := os.Stat(DB_PATH); err != nil {
+		// sqlite3 database file is not present
+		folders := filepath.Dir(DB_PATH)
+		err = os.MkdirAll(folders, os.ModePerm)
+		if err != nil {
+			log.Fatalf("Does not able to create folders for database file, try creating the folder manually: %s", err.Error())
+		}
+		_, err = os.Create(DB_PATH)
+		if err != nil {
+			log.Fatalf("Does not able to create sqlite3 db file, try creating the file manually: %s", err.Error())
+		}
+	}
+
+	DB = database.CreateDB("sqlite3", DB_PATH)
+
+	_, err := DB.Exec(`CREATE TABLE IF NOT EXISTS articles (
+		id varchar(16) primary key,
+		title varchar(255) not null,
+		slug varchar(255) not null,
+		description text,
+		date varchar(10) not null,
+		views INTEGER DEFAULT 0,
+		md text not null
+	);
+	`)
+	if err != nil {
+		log.Fatalf("Does not able to create table in the database file, try creating the table manually: %s", err.Error())
+	}
+
+}
+
+func main() {
+	http.HandleFunc("/", Home)
+	http.HandleFunc("/compose-article/", composeArticle)
+	http.HandleFunc("/add-article/", addArticle)
+	http.HandleFunc("/get-articles/", getArticles)
+	http.HandleFunc("/get-article/", getSingleArticle)
+	http.HandleFunc("/get-articles-meta/", getAllArticlesMeta)
+	http.HandleFunc("/get-article-meta/", getSingleArticleMeta)
+
+	log.Printf("Server running at port: %s", PORT)
+	http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil)
+}
 
 /*
 Handler Functions
@@ -45,7 +113,7 @@ func composeArticle(res http.ResponseWriter, req *http.Request) {
 	}
 
 	password := strings.TrimSpace(req.FormValue("password"))
-	if password != os.Getenv("PASSWORD") {
+	if password != PASSWORD {
 		http.Error(res, err.Error(), http.StatusForbidden)
 	}
 
@@ -84,15 +152,18 @@ func addArticle(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	database.InsertArticle(db, title, slug, description, date, md)
+	err = database.InsertArticle(DB, title, slug, description, date, md)
 
-	http.Redirect(res, req, "/", http.StatusSeeOther)
+	if err != nil {
+		http.Error(res, "Something went wrong", http.StatusInternalServerError)
+	}
 
+	http.Redirect(res, req, "/get-article?slug="+slug, http.StatusSeeOther)
 }
 
 func getArticles(res http.ResponseWriter, _ *http.Request) {
 	enableCors(&res)
-	var articles []database.Article = database.GetArticles(db)
+	var articles []database.Article = database.GetArticles(DB)
 	res.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(articles)
 	if err != nil {
@@ -106,8 +177,12 @@ func getArticles(res http.ResponseWriter, _ *http.Request) {
 
 func getSingleArticle(res http.ResponseWriter, req *http.Request) {
 	enableCors(&res)
+
 	slug := req.URL.Query().Get("slug")
-	article := database.GetSingleArticle(slug, db)
+	article := database.GetSingleArticle(slug, DB)
+
+	defer database.IncrementViews(article.Views, slug, DB)
+
 	res.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(article)
 	if err != nil {
@@ -121,7 +196,7 @@ func getSingleArticle(res http.ResponseWriter, req *http.Request) {
 
 func getAllArticlesMeta(res http.ResponseWriter, req *http.Request) {
 	enableCors(&res)
-	var articlesMeta []database.ArticleMeta = database.GetArticlesMeta(db)
+	var articlesMeta []database.ArticleMeta = database.GetArticlesMeta(DB)
 	res.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(articlesMeta)
 	if err != nil {
@@ -136,7 +211,7 @@ func getAllArticlesMeta(res http.ResponseWriter, req *http.Request) {
 func getSingleArticleMeta(res http.ResponseWriter, req *http.Request) {
 	enableCors(&res)
 	slug := req.URL.Query().Get("slug")
-	var articleMeta database.ArticleMeta = database.GetSingleArticleMeta(slug, db)
+	var articleMeta database.ArticleMeta = database.GetSingleArticleMeta(slug, DB)
 	res.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(articleMeta)
 	if err != nil {
@@ -146,20 +221,4 @@ func getSingleArticleMeta(res http.ResponseWriter, req *http.Request) {
 	if err2 != nil {
 		http.Error(res, err.Error(), http.StatusNotFound)
 	}
-}
-
-func main() {
-	http.HandleFunc("/", Home)
-	http.HandleFunc("/compose-article/", composeArticle)
-	http.HandleFunc("/add-article/", addArticle)
-	http.HandleFunc("/get-articles/", getArticles)
-	http.HandleFunc("/get-article/", getSingleArticle)
-	http.HandleFunc("/get-articles-meta/", getAllArticlesMeta)
-	http.HandleFunc("/get-article-meta/", getSingleArticleMeta)
-	PORT := os.Getenv("PORT")
-	if PORT == "" {
-		PORT = "5005"
-	}
-	log.Printf("Server running at port: %s", PORT)
-	http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil)
 }
