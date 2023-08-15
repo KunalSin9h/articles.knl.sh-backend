@@ -1,8 +1,6 @@
-⚠️ This project is no longer in use.
+⚠️ This project is no longer in use. Not https://github.com/kunalsin9h/api is its replacement
 
 # articles.knl.sh-backend
-
-backend for https://articles.kunalsin9h.com
 
 # Docker running
 
