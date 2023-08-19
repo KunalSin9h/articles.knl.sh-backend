@@ -1,4 +1,4 @@
-⚠️ This project is no longer in use. Not https://github.com/kunalsin9h/api is its replacement
+⚠️ This project is no longer in use. https://github.com/kunalsin9h/api is its replacement
 
 # articles.knl.sh-backend
 
